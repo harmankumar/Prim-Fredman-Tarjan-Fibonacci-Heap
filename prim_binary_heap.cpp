@@ -1,15 +1,10 @@
 #include <bits/stdc++.h>
 #include <boost/heap/d_ary_heap.hpp>
 
+#define INF numeric_limits<int>::max()
+
 using namespace std;
 
-#define INF numeric_limits<int>::max()
-/*
-struct vertex{
-	char name;
-	int key;
-};
-*/
 struct comparator
 {
 	bool operator() (const pair<char,int>& a, const pair<char,int>& b) const
@@ -25,6 +20,7 @@ unordered_map<char, char> parent;	// This would contain the edges that form the 
 unordered_map< char , boost::heap::d_ary_heap< pair<char,int>, boost::heap::arity<2>,  boost::heap::compare< comparator >, boost::heap::mutable_<true> >::handle_type > pointer;	// This contains pointer to a vertex to it's location in the binary heap.
 long long mst_weight = 0;	// This is the weight of the MST.
 
+/// Prim's algorithm in pseudocode. 
 /*
 Q ← PQinit()
 for each vertex v in graph G
