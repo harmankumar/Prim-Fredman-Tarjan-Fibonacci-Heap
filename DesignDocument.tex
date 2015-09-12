@@ -34,7 +34,19 @@
 \section{Overall Design}
 
 \begin{flushleft}
+The whole project is divided into the following parts:
 
+\begin{enumerate}
+
+\item Implementing the binomial heap and fibonacci heap data structures.
+
+\item Using the above mentioned data structures, prims MST algorithm and the fredman-tarjan MST algorithm were implemented.
+
+\item Generating random graphs on which the the running times of the above mentioned MST algorithms was tested. 
+
+\item A script for the automated testing of the algorithms on the generated graphs and timing them.  
+
+\end{enumerate} 
 
 \end{flushleft} 
 
@@ -42,21 +54,40 @@
 
 \section{Random Graph Generation}
 \begin{flushleft}
-	The random graph generator is implemented in python.
+	The random graph generator 
+	
+	Some features of the random graph generator are as follows:
+	
+\begin{enumerate}
+	\item The generated graph had to be connected.
+
+	\item The density (a measure of the number of edges) of the graph was a parameter of the graph generator.
+	
+	\item 
+\end{enumerate}
 	
 \end{flushleft}
 
-\section{Implementation of Prim's Algorithm}
+\section{Prims Algorithm and The Binary Heap}
 \begin{flushleft}
-	Prim's algorithm is implemented in C++, the binomial heap data structure is provided in the queue STL library.  
+	The implementation of the binary heap provided by the boost heap library was used.
+	  
 \end{flushleft} 
 
-\section{Implementation of Fredman-Tarjan Algorithm}
+\section{Fredman-Tarjan Algorithm and The Fibonacci Heap}
 \begin{flushleft}
+	In order to implement the Fredman-Tarjan algorithm, the fibonacci heap data structure was implemented.
+	
+	
+
 	The Fredman-Tarjan algorithm is implemented in C++, the fibonacci heap data structure is provided in the boost library, fibonacci\_heap.hpp.  
 \end{flushleft} 
 
 \section{Automated Testing}
+\begin{flushleft}
+	This is done by a python script (Automated\_Tester.py).
+	This script Generates a random graph, and saves the running times that the two algorithms took to compute it's MST.   
+\end{flushleft}
 
 
 
