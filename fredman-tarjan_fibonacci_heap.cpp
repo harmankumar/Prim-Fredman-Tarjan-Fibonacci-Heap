@@ -22,17 +22,17 @@ public:
     unordered_map<string, int> sz;
     unordered_map<string, string> mapping;
 	// Create an union find data structure with N isolated sets.
-    UF(vector<string> str)   
+    UF(set<string> str)   
     {
     	int N = str.size();
         cnt = N;
 		// id = new int[N];
 		// sz = new int[N];
-        for(int i=0; i<N; i++)	
+        for(auto it = str.begin(); it != str.end(); it++)	
         {
-            mapping[str[i]] = str[i];
+            mapping[*it] = *it;
             // id[i] = i;
-	    	sz[str[i]] = 1;
+	    	sz[*it] = 1;
 		}
     }
     
@@ -92,7 +92,7 @@ public:
 int num_edges = 0;
 int num_vertices = 0;
 int heapSize = 0;
-vector<string> vertices;	// Contains names of all the vertices.
+set<string> vertices;	// Contains names of all the vertices.
 unordered_map<string, unordered_map<string,int> > adj_lis;	// This is graph represented in the form of an adjacency list.
 unordered_map<string, string> parent;	// This would contain the edges that form the MST, after the prim() subroutine has been applied on the graph.
 long long mst_weight = 0;	// This is the weight of the MST.
@@ -110,19 +110,17 @@ void fredman_tarjan(UF disjoint_set)
 		heapSize = pow(2,heapSize);
 	}
 
-	cout<<"size is: "<<heapSize<<endl;
 	cout<<disjoint_set.cnt<<endl;
 	
 	set<string> visited;	// Set of explored vertices.
 
-
-	for(int i=0; i<vertices.size(); i++)
+	for(auto iter = vertices.begin(); iter != vertices.end(); iter++)
 	{	
-		if(visited.find(disjoint_set.find(vertices[i])) == visited.end())	// The vertex has not yet been explored
+		if(visited.find(disjoint_set.find(*iter)) == visited.end())	// The vertex has not yet been explored
 		{
-			visited.insert(vertices[i]);
+			visited.insert(*iter);
 			boost::heap::fibonacci_heap< pair<string,int>,  boost::heap::compare< comparator >, boost::heap::mutable_<true> > pq; 
-			auto edgeit1 = adj_lis[vertices[i]];
+			auto edgeit1 = adj_lis[*iter];
 			unordered_map< string , boost::heap::fibonacci_heap< pair<string,int>, boost::heap::compare< comparator >, boost::heap::mutable_<true> >::handle_type > pointer;	// This contains pointer to a vertex to it's location in the binary heap.
 			pair<string,int> somepair; 
 			boost::heap::fibonacci_heap< pair<string,int>, boost::heap::compare< comparator >, boost::heap::mutable_<true> >::handle_type pos;
@@ -133,16 +131,18 @@ void fredman_tarjan(UF disjoint_set)
 				pointer[(vecit1)->first] = pos;
 			}
 
-			while(1)
+			while(!pq.empty())
 			{
 				auto it = (pq.top());
-				if((pq.size() > heapSize) || (visited.find(it.first) != visited.end()))	// Size of the heap is too large or the node popped is a part of some other MST.
+				if((pq.size() > heapSize) || (visited.find(it.first) != visited.end()) || (disjoint_set.find(it.first) == disjoint_set.find(*iter)))	// Size of the heap is too large or the node popped is a part of some other MST.
 					break;
 
 				pq.pop();
 				mst_weight += it.second;	// Adding the cost of the edge to the weight of the MST
 				visited.insert(it.first);	// Adding the vertex to the set of explored vertices. 
-				disjoint_set.merge(it.first,vertices[i]);
+				disjoint_set.merge(it.first,*iter);
+
+				cout<<"Adding "<<it.second<<" "<<disjoint_set.cnt<<endl;
 
 				auto edgeit = adj_lis[it.first];
 				boost::heap::fibonacci_heap< pair<string,int>, boost::heap::compare< comparator >, boost::heap::mutable_<true> >::handle_type loophandler;
@@ -176,34 +176,34 @@ void fredman_tarjan(UF disjoint_set)
 		}
 	}
 
-	cout<<"First iteration over"<<endl;
 	// All vertices have been visited.
 	if(disjoint_set.cnt == 1)	// The MST has been computed.
 		return;
 
 //If the MST has not yet been computed, perform a contraction and run it again.
 	unordered_map<string, unordered_map<string,int> > new_adj_lis;
-	vector<string> newvertices;
-	set<string> new_vert;
-	/*
-	The contraction is performed as follows:
-		1) The edges between vertices belonging to the same set are removed. 
-		2) Only the min-cost edge joining two different sets is kept.
-	*/
+	set<string> newvertices;
+
+/*
+The contraction is performed as follows:
+	1) Relabel the vertices based on the component they belong to.
+	2) The edges between vertices belonging to the same set are removed. 
+	3) Only the min-cost edge joining two different sets is kept.
+*/
 	for(auto it = vertices.begin(); it != vertices.end(); it++)
 	{	
 		string set_of = disjoint_set.find(*it);
-		if(new_vert.find(set_of) == new_vert.end())
+		if(newvertices.find(set_of) == newvertices.end())
 		{
-			new_vert.insert(set_of);
-			newvertices.push_back(set_of);
+			newvertices.insert(set_of);
 		}
 	}
+	vertices = newvertices;	// Updated the vertices.
+
 	unordered_map<string,int> mymap;
 	for(auto it = newvertices.begin(); it != newvertices.end(); it++)
 		new_adj_lis[*it] = mymap;
 
-	vertices = newvertices;	// Updated the vertices.
 
 	for(auto it = adj_lis.begin(); it != adj_lis.end(); it++)
 	{
@@ -240,7 +240,7 @@ int main()
 		if(name.compare("#") == 0)
 			break;
 
-		vertices.push_back(name);
+		vertices.insert(name);
 	}
 // Read the vertices.
 
