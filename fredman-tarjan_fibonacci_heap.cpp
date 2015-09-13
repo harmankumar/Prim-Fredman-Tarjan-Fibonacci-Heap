@@ -62,8 +62,9 @@ public:
         string i = find(x);
         string j = find(y);
         if (i.compare(j) == 0) 
+        {	
         	return;
-		
+		}
 		// make smaller root point to larger one
         if(sz[i] < sz[j])	
         { 
@@ -80,7 +81,7 @@ public:
 	// Are objects x and y in the same set?
     bool connected(string x, string y)    
     {
-        return find(x) == find(y);
+        return (find(x).compare(find(y)) == 0);
     }
 	// Return the number of disjoint sets.
     int count() 
@@ -99,8 +100,7 @@ long long mst_weight = 0;	// This is the weight of the MST.
 
 void fredman_tarjan(UF disjoint_set)
 {
-	cout<<num_edges<<" "<<num_vertices<<endl;
-
+	// cout<<num_edges<<" "<<num_vertices<<endl;
 	if(heapSize == 0)	// First iteration
 	{	
 		heapSize = num_edges/num_vertices;	
@@ -134,15 +134,29 @@ void fredman_tarjan(UF disjoint_set)
 			while(!pq.empty())
 			{
 				auto it = (pq.top());
-				if((pq.size() > heapSize) || (visited.find(it.first) != visited.end()) || (disjoint_set.find(it.first) == disjoint_set.find(*iter)))	// Size of the heap is too large or the node popped is a part of some other MST.
+				if((pq.size() > heapSize) || (visited.find(it.first) != visited.end()) || (disjoint_set.connected(it.first, *iter) ) )	// Size of the heap is too large or the node popped is a part of some other MST.
 					break;
+
+				cout<<"Merging "<<disjoint_set.sz[it.first]<<" "<<disjoint_set.sz[*iter]<<endl;
+			
+			    for(auto itx = disjoint_set.sz.begin(); itx != disjoint_set.sz.end(); itx++)
+			        cout<<itx->first<<" "<<itx->second<<endl;
+			    cout<<endl;
+
+			    for(auto itx = disjoint_set.mapping.begin(); itx != disjoint_set.mapping.end(); itx++)
+			        cout<<itx->first<<" "<<itx->second<<endl;
+			    cout<<endl;
 
 				pq.pop();
 				mst_weight += it.second;	// Adding the cost of the edge to the weight of the MST
 				visited.insert(it.first);	// Adding the vertex to the set of explored vertices. 
+					
+
 				disjoint_set.merge(it.first,*iter);
 
-				cout<<"Adding "<<it.second<<" "<<disjoint_set.cnt<<endl;
+				cout<<disjoint_set.sz[it.first]<<" "<<disjoint_set.sz[*iter]<<endl;
+
+				// cout<<"Adding "<<it.second<<" "<<disjoint_set.cnt<<endl;
 
 				auto edgeit = adj_lis[it.first];
 				boost::heap::fibonacci_heap< pair<string,int>, boost::heap::compare< comparator >, boost::heap::mutable_<true> >::handle_type loophandler;
@@ -246,7 +260,6 @@ int main()
 
 	string v1,v2;
 	int weight;
-
 
 ///	Reading the edges from the file and creating the adjacency list. 
 	while( !f.eof() )
