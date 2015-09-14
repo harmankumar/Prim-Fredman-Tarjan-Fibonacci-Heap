@@ -13,6 +13,7 @@ int main(int argc, char** argv){
 	int num_edges = 20;
 */
 	int pres_edges = 0;
+	int max_weight = 30;
     srand ( time(NULL) );
 
     adj_lis.resize(num_vert);
@@ -59,8 +60,22 @@ int main(int argc, char** argv){
     	cout<<endl;
     }
 
+    string count;
+    ifstream read;
+    read.open("counter.txt");
+    read>>count;
+    read.close();
+
+    ofstream erase;
+    erase.open("counter.txt");
+    erase<<(stoi(count) + 1);
+    erase.close();
+
     ofstream f;
-    f.open("output_graph.txt");
+    string s("Test/output_graph_");
+    s += count;
+    s += ".txt";
+    f.open(s);
 
     bool first = true;
 
@@ -82,8 +97,13 @@ int main(int argc, char** argv){
     for(int i = 0; i<num_vert; i++)
     {
     	for(int j=0; j< (adj_lis[i]).size(); j++)
-    		f<<endl<<i<<" "<<adj_lis[i][j];
+    	{
+    		int weight = (rand() % max_weight) + 1;
+    		f<<endl<<i<<" "<<adj_lis[i][j]<<" "<<weight;
+    	}
     }
+
+    f.close();
 
     return 0;
 }
