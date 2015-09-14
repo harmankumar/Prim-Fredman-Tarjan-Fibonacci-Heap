@@ -89,7 +89,7 @@ public:
         return cnt;
     }
 };
-
+int counter = 0;
 int num_edges = 0;
 int num_vertices = 0;
 int heapSize = 0;
@@ -114,11 +114,22 @@ void fredman_tarjan(UF disjoint_set)
 	
 	set<string> visited;	// Set of explored vertices.
 
+	cout<<"The vertices are "<<endl;
+
+	for(auto it = vertices.begin(); it != vertices.end(); it++)
+		cout<<*it<<endl;
+	cout<<"The Edges are "<<endl;
+
+	for(auto it = adj_lis.begin(); it != adj_lis.end(); it++)
+		for (auto vecit = ((*it).second).begin(); vecit != ((*it).second).end(); vecit++)
+			cout<<(*it).first<<" "<<(*vecit).first<<" "<<(*vecit).second<<endl;
+
 	for(auto iter = vertices.begin(); iter != vertices.end(); iter++)
 	{	
 		if(visited.find(disjoint_set.find(*iter)) == visited.end())	// The vertex has not yet been explored
 		{
-			visited.insert(*iter);
+			cout<<"Running the iteration for "<<*iter<<endl;
+			// visited.insert(*iter);
 			boost::heap::fibonacci_heap< pair<string,int>,  boost::heap::compare< comparator >, boost::heap::mutable_<true> > pq; 
 			auto edgeit1 = adj_lis[*iter];
 			unordered_map< string , boost::heap::fibonacci_heap< pair<string,int>, boost::heap::compare< comparator >, boost::heap::mutable_<true> >::handle_type > pointer;	// This contains pointer to a vertex to it's location in the binary heap.
@@ -133,27 +144,37 @@ void fredman_tarjan(UF disjoint_set)
 
 			while(!pq.empty())
 			{
+				cout<<*iter<<"   Size is "<<pq.size()<<endl;
 				auto it = (pq.top());
 				if((pq.size() > heapSize) || (visited.find(it.first) != visited.end()) || (disjoint_set.connected(it.first, *iter) ) )	// Size of the heap is too large or the node popped is a part of some other MST.
+				{
+					cout<<"Breaking"<<endl;
 					break;
+				}
+				cout<<"Merging "<<disjoint_set.mapping[it.first]<<" "<<disjoint_set.mapping[*iter]<<endl;
+				
+				visited.insert(*iter);
+				visited.insert(it.first);
 
-				cout<<"Merging "<<disjoint_set.sz[it.first]<<" "<<disjoint_set.sz[*iter]<<endl;
-			
 			    for(auto itx = disjoint_set.sz.begin(); itx != disjoint_set.sz.end(); itx++)
 			        cout<<itx->first<<" "<<itx->second<<endl;
 			    cout<<endl;
 
-			    for(auto itx = disjoint_set.mapping.begin(); itx != disjoint_set.mapping.end(); itx++)
-			        cout<<itx->first<<" "<<itx->second<<endl;
-			    cout<<endl;
 
 				pq.pop();
+				cout<<"Popping "<<endl;
 				mst_weight += it.second;	// Adding the cost of the edge to the weight of the MST
+				cout<<"############### adding "<<it.second<<endl;
 				visited.insert(it.first);	// Adding the vertex to the set of explored vertices. 
 					
 
 				disjoint_set.merge(it.first,*iter);
-
+			    
+			    counter++;
+			    
+			    for(auto itx = disjoint_set.mapping.begin(); itx != disjoint_set.mapping.end(); itx++)
+			        cout<<itx->first<<" in the set "<<itx->second<<endl;
+			    cout<<endl;
 				cout<<disjoint_set.sz[it.first]<<" "<<disjoint_set.sz[*iter]<<endl;
 
 				// cout<<"Adding "<<it.second<<" "<<disjoint_set.cnt<<endl;
@@ -163,6 +184,8 @@ void fredman_tarjan(UF disjoint_set)
 
 				for(auto vecit = edgeit.begin(); vecit != edgeit.end(); vecit++)
 				{
+					if( ((*vecit).first).compare(*iter) == 0)
+						continue;
 					if(pointer.find((*vecit).first) == pointer.end())	// The vertex is not present in the heap.
 					{
 						somepair = make_pair((*vecit).first, (*vecit).second);
@@ -186,6 +209,9 @@ void fredman_tarjan(UF disjoint_set)
 						}
 					}
 				}
+
+				for(auto someit = pq.begin(); someit != pq.end(); someit++)
+        			cout << (*someit).first << " "<< (*someit).second<<endl; 
 			}
 		}
 	}
@@ -219,20 +245,33 @@ The contraction is performed as follows:
 		new_adj_lis[*it] = mymap;
 
 
+	cout<<"Verices are "<<endl;
+	for(auto it = newvertices.begin(); it != newvertices.end(); it++)
+		cout<<*it<<endl;
+	cout<<endl;
+
+
 	for(auto it = adj_lis.begin(); it != adj_lis.end(); it++)
 	{
 		for (auto vecit = ((*it).second).begin(); vecit != ((*it).second).end(); vecit++)
 		{
 			if( ! disjoint_set.connected( (*it).first,(*vecit).first ) )	// The vertices lie in different components.
 			{
-				if( (new_adj_lis[(*it).first]).find((*vecit).first) == (new_adj_lis[(*it).first]).end() )
-					new_adj_lis[(*it).first][(*vecit).first] = (*vecit).second;
+				if( (new_adj_lis[disjoint_set.find((*it).first)] ).find((*vecit).first) == (new_adj_lis[(*it).first]).end() )
+					new_adj_lis[disjoint_set.find((*it).first)][disjoint_set.find((*vecit).first)] = (*vecit).second;
 
-				else if(new_adj_lis[(*it).first][(*vecit).first] > (*vecit).second)
-					new_adj_lis[(*it).first][(*vecit).first] = (*vecit).second;
+				else if(new_adj_lis[disjoint_set.find((*it).first)][disjoint_set.find( (*vecit).first)] > (*vecit).second)
+					new_adj_lis[disjoint_set.find((*it).first)][disjoint_set.find( (*vecit).first)] = (*vecit).second;
 			}
 		}
 	}
+
+	cout<<"The New Edges are "<<endl;
+
+	for(auto it = new_adj_lis.begin(); it != new_adj_lis.end(); it++)
+		for (auto vecit = ((*it).second).begin(); vecit != ((*it).second).end(); vecit++)
+			cout<<(*it).first<<" "<<(*vecit).first<<" "<<(*vecit).second<<endl;
+
 
 	adj_lis = new_adj_lis;
 
@@ -249,11 +288,11 @@ int main()
 /// Reading the vertices from the file and storing them in a vector.
 	while(1)
 	{
-		num_vertices++;
+
 		f>>name;
 		if(name.compare("#") == 0)
 			break;
-
+		num_vertices++;
 		vertices.insert(name);
 	}
 // Read the vertices.
@@ -274,6 +313,7 @@ int main()
 	
 	UF disjoint_set(vertices);	// Creating a disjoint set on the vector of vertices.
 	fredman_tarjan(disjoint_set);
+	// cout<<"Good Luck "<<num_edges<<endl;
 
 // Done.
 	cout<<"The weight of the MST is "<<mst_weight<<endl;
