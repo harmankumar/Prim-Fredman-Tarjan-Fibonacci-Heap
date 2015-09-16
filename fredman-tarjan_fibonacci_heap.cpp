@@ -1,17 +1,4 @@
-#include <bits/stdc++.h>
-#include "Fib_Heap/FibonacciHeap.h"
-
-using namespace std;
-
-#define INF numeric_limits<int>::max()
-
-struct comparator
-{
-	bool operator() (const pair<string,int>& a, const pair<string,int>& b) const
-	{
-		return a.second > b.second;
-	}
-};
+#include "FibonacciHeap.h"
 
 //class implementing Union Find Data Structure with Path Compression
 class UF    
@@ -89,6 +76,7 @@ public:
         return cnt;
     }
 };
+
 int counter = 0;
 int num_edges = 0;
 int num_vertices = 0;
@@ -110,11 +98,11 @@ void fredman_tarjan(UF disjoint_set)
 		heapSize = pow(2,heapSize);
 	}
 
-	cout<<disjoint_set.cnt<<endl;
+//	cout<<disjoint_set.cnt<<endl;
 	
 	set<string> visited;	// Set of explored vertices.
 
-	cout<<"The vertices are "<<endl;
+/*	cout<<"The vertices are "<<endl;
 
 	for(auto it = vertices.begin(); it != vertices.end(); it++)
 		cout<<*it<<endl;
@@ -123,18 +111,18 @@ void fredman_tarjan(UF disjoint_set)
 	for(auto it = adj_lis.begin(); it != adj_lis.end(); it++)
 		for (auto vecit = ((*it).second).begin(); vecit != ((*it).second).end(); vecit++)
 			cout<<(*it).first<<" "<<(*vecit).first<<" "<<(*vecit).second<<endl;
-
+*/
 	for(auto iter = vertices.begin(); iter != vertices.end(); iter++)
 	{	
 		if(visited.find(disjoint_set.find(*iter)) == visited.end())	// The vertex has not yet been explored
 		{
-			cout<<"Running the iteration for "<<*iter<<endl;
+//			cout<<"Running the iteration for "<<*iter<<endl;
 			// visited.insert(*iter);
-			boost::heap::fibonacci_heap< pair<string,int>,  boost::heap::compare< comparator >, boost::heap::mutable_<true> > pq; 
+			fib pq; 
 			auto edgeit1 = adj_lis[*iter];
-			unordered_map< string , boost::heap::fibonacci_heap< pair<string,int>, boost::heap::compare< comparator >, boost::heap::mutable_<true> >::handle_type > pointer;	// This contains pointer to a vertex to it's location in the binary heap.
+			unordered_map< string , fib_handle > pointer;	// This contains pointer to a vertex to it's location in the binary heap.
 			pair<string,int> somepair; 
-			boost::heap::fibonacci_heap< pair<string,int>, boost::heap::compare< comparator >, boost::heap::mutable_<true> >::handle_type pos;
+			fib_handle pos;
 			for(auto vecit1 = edgeit1.begin(); vecit1 != edgeit1.end(); vecit1++)
 			{
 				somepair = make_pair((*vecit1).first, (*vecit1).second);
@@ -144,43 +132,43 @@ void fredman_tarjan(UF disjoint_set)
 
 			while(!pq.empty())
 			{
-				cout<<*iter<<"   Size is "<<pq.size()<<endl;
+//				cout<<*iter<<"   Size is "<<pq.size()<<endl;
 				auto it = (pq.top());
 				if((pq.size() > heapSize) || (visited.find(it.first) != visited.end()) || (disjoint_set.connected(it.first, *iter) ) )	// Size of the heap is too large or the node popped is a part of some other MST.
 				{
-					cout<<"Breaking"<<endl;
+//					cout<<"Breaking"<<endl;
 					break;
 				}
-				cout<<"Merging "<<disjoint_set.mapping[it.first]<<" "<<disjoint_set.mapping[*iter]<<endl;
+//				cout<<"Merging "<<disjoint_set.mapping[it.first]<<" "<<disjoint_set.mapping[*iter]<<endl;
 				
 				visited.insert(*iter);
 				visited.insert(it.first);
 
-			    for(auto itx = disjoint_set.sz.begin(); itx != disjoint_set.sz.end(); itx++)
+/*			    for(auto itx = disjoint_set.sz.begin(); itx != disjoint_set.sz.end(); itx++)
 			        cout<<itx->first<<" "<<itx->second<<endl;
 			    cout<<endl;
-
+*/
 
 				pq.pop();
-				cout<<"Popping "<<endl;
+//				cout<<"Popping "<<endl;
 				mst_weight += it.second;	// Adding the cost of the edge to the weight of the MST
-				cout<<"############### adding "<<it.second<<endl;
+//				cout<<"############### adding "<<it.second<<endl;
 				visited.insert(it.first);	// Adding the vertex to the set of explored vertices. 
 					
 
 				disjoint_set.merge(it.first,*iter);
 			    
 			    counter++;
-			    
+/*			    
 			    for(auto itx = disjoint_set.mapping.begin(); itx != disjoint_set.mapping.end(); itx++)
 			        cout<<itx->first<<" in the set "<<itx->second<<endl;
 			    cout<<endl;
 				cout<<disjoint_set.sz[it.first]<<" "<<disjoint_set.sz[*iter]<<endl;
-
+*/
 				// cout<<"Adding "<<it.second<<" "<<disjoint_set.cnt<<endl;
 
 				auto edgeit = adj_lis[it.first];
-				boost::heap::fibonacci_heap< pair<string,int>, boost::heap::compare< comparator >, boost::heap::mutable_<true> >::handle_type loophandler;
+				fib_handle loophandler;
 
 				for(auto vecit = edgeit.begin(); vecit != edgeit.end(); vecit++)
 				{
@@ -210,8 +198,8 @@ void fredman_tarjan(UF disjoint_set)
 					}
 				}
 
-				for(auto someit = pq.begin(); someit != pq.end(); someit++)
-        			cout << (*someit).first << " "<< (*someit).second<<endl; 
+//				for(auto someit = pq.begin(); someit != pq.end(); someit++)
+ //       			cout << (*someit).first << " "<< (*someit).second<<endl; 
 			}
 		}
 	}
@@ -245,11 +233,11 @@ The contraction is performed as follows:
 		new_adj_lis[*it] = mymap;
 
 
-	cout<<"Verices are "<<endl;
+/*	cout<<"Verices are "<<endl;
 	for(auto it = newvertices.begin(); it != newvertices.end(); it++)
 		cout<<*it<<endl;
 	cout<<endl;
-
+*/
 
 	for(auto it = adj_lis.begin(); it != adj_lis.end(); it++)
 	{
@@ -266,13 +254,13 @@ The contraction is performed as follows:
 		}
 	}
 
-	cout<<"The New Edges are "<<endl;
+/*	cout<<"The New Edges are "<<endl;
 
 	for(auto it = new_adj_lis.begin(); it != new_adj_lis.end(); it++)
 		for (auto vecit = ((*it).second).begin(); vecit != ((*it).second).end(); vecit++)
 			cout<<(*it).first<<" "<<(*vecit).first<<" "<<(*vecit).second<<endl;
 
-
+*/
 	adj_lis = new_adj_lis;
 
 	fredman_tarjan(disjoint_set);
@@ -280,7 +268,7 @@ The contraction is performed as follows:
 
 int main()
 {
-
+	time_t start_time,end_time;
 	ifstream f;
 	f.open("graphFile.txt");
 	string name;
@@ -308,15 +296,19 @@ int main()
 		adj_lis[v1][v2] = weight;
 		adj_lis[v2][v1] = weight;
 	}
+	f.close();
 // Edges read, adjacency list created.
 //	Calculating the MST of the garph by running prim's algorithm on it.
 	
 	UF disjoint_set(vertices);	// Creating a disjoint set on the vector of vertices.
+	start_time = time(NULL);
 	fredman_tarjan(disjoint_set);
+	end_time = time(NULL);
 	// cout<<"Good Luck "<<num_edges<<endl;
 
 // Done.
 	cout<<"The weight of the MST is "<<mst_weight<<endl;
+	cout<<"Time taken is "<<difftime(end_time,start_time)<<endl;
 /*
 	cout<<"The Edges of the MST are:"<<endl;
 	for(auto hashit = parent.begin(); hashit != parent.end(); ++hashit)

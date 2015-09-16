@@ -4,9 +4,43 @@
 
 \usepackage{hyperref}
 
+\usepackage{amssymb}
+
+\usepackage{listings}
+
+\usepackage{fixltx2e}
+
 \usepackage[T1]{fontenc}
 
 \usepackage[T1]{fontenc}
+
+\usepackage{color}
+ 
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle}
 
 %\sectionfont{\fontsize{10}{10}\selectfont}
 
@@ -19,7 +53,7 @@
 		2013CS10224		
 		}
 
-\title{Assignment 1}
+\title{Design Document}
 \maketitle
 
 
@@ -59,37 +93,63 @@ The whole project is divided into the following parts:
 	Some features of the random graph generator are as follows:
 	
 \begin{enumerate}
-	\item The generated graph had to be connected.
+	\item The generated graph is guaranteed to be connected. This is done by generating a tree and adding edges to it, until a graph of the desired properties is not formed.
 
-	\item The density (a measure of the number of edges) of the graph was a parameter of the graph generator.
+	\item The number of vertices and desired number of edges were taken as user parameters and the graph is generated accordingly.
 	
-	\item 
+	\item The approach of adding vertices to the tree is as follows:\\
+	\vspace{10px}
+Pick two random vertices:	
+	\begin{enumerate}
+	\item If they are connected, do nothing.
+	\item If not, add an edge with a randomly generated weight between them.
+	\end{enumerate}
+Do the above till either the desired number of edges is reached \textbf{OR} there is a timeout condition.	
 \end{enumerate}
-	
+	After the graph 
 \end{flushleft}
 
 \section{Prims Algorithm and The Binary Heap}
 \begin{flushleft}
-	The implementation of the binary heap provided by the boost heap library was used.
+	The implementation of the binary heap provided by the boost heap library was used.\\
+	The graph is read from a text file and stored in the form of an adjacency list. Prims algorithm is run on the graph and the weight of the MST is returned.
+	
 	  
 \end{flushleft} 
 
 \section{Fredman-Tarjan Algorithm and The Fibonacci Heap}
 \begin{flushleft}
-	In order to implement the Fredman-Tarjan algorithm, the fibonacci heap data structure was implemented.
+	In order to implement the Fredman-Tarjan algorithm, the fibonacci heap data structure was implemented.\\
+	\lstinputlisting[language=c++]{Fib.h}	
+	\vspace{10px}	
+	In order to maintain disjoint sets of vertices, the Union-Find data structure is implemented as follows:
+	\lstinputlisting[language=c++]{UF.h}
+
+	The graph is read from a text file and stored in the form of an adjacency list. The Fredman-Tarjan algorithm is applied on the graph and the weight of the MST is given as output.
 	
 	
 
-	The Fredman-Tarjan algorithm is implemented in C++, the fibonacci heap data structure is provided in the boost library, fibonacci\_heap.hpp.  
+
 \end{flushleft} 
 
 \section{Automated Testing}
 \begin{flushleft}
 	This is done by a python script (Automated\_Tester.py).
-	This script Generates a random graph, and saves the running times that the two algorithms took to compute it's MST.   
+	This script Generates a random graph, and computes the running times that the two algorithms take to compute the MST corresponding to that graph.\\
+	The timing of the algorithms was done inside the C++ code itself by using the <time.h> library. The time was that taken by the algorithm to compute the MST of the graph, exclusive of any time spent on file I/O etc.\\
+	While compiling the programs, the \textbf{-o0} flag was used in order to turn off all compiler optimizations, also disk caching was disabled, in order to get a better estimate of how the programs behave.
+	
+	   
 \end{flushleft}
 
-
+\section{Acknowledgements}
+\begin{flushleft}
+\begin{itemize}
+\item Boost C++ libraries, for the boost::binary\_heap, an implementation of binary heap (used in the implementation of prims algorithm).
+\item Introduction to Algorithms by CLRS, for the pseudocode for fibonacci heap, that was translated into C++ code. 
+\item g++ documentation and windows caching documentation for turning off all levels of compiler optimizations and caching.
+\end{itemize}
+\end{flushleft}
 
 
 \end{document}

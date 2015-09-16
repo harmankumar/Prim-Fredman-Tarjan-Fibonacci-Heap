@@ -1,23 +1,11 @@
-#include <bits/stdc++.h>
-#include <boost/heap/d_ary_heap.hpp>
-
-#define INF numeric_limits<int>::max()
+#include "util.h"
 
 using namespace std;
-
-struct comparator
-{
-	bool operator() (const pair<string,int>& a, const pair<string,int>& b) const
-	{
-		return a.second > b.second;
-	}
-};
-
 
 vector<string> vertices;	// Contains names of all the vertices.
 unordered_map<string, unordered_map<string,int> > adj_lis;	// This is graph represented in the form of an adjacency list.
 unordered_map<string, string> parent;	// This would contain the edges that form the MST, after the prim() subroutine has been applied on the graph.
-unordered_map< string , boost::heap::d_ary_heap< pair<string,int>, boost::heap::arity<2>,  boost::heap::compare< comparator >, boost::heap::mutable_<true> >::handle_type > pointer;	// This contains pointer to a vertex to it's location in the binary heap.
+unordered_map< string , bin_handle > pointer;	// This contains pointer to a vertex to it's location in the binary heap.
 long long mst_weight = 0;	// This is the weight of the MST.
 
 /// Prim's algorithm in pseudocode. 
@@ -38,14 +26,14 @@ if key(w) > c(v,w)
 void prim()
 {
 	set<string> visited;
-	boost::heap::d_ary_heap< pair<string,int>, boost::heap::arity<2>,  boost::heap::compare< comparator >, boost::heap::mutable_<true> > pq; 
+	bin_heap pq; 
 
 ///	Initializing the heap.	
 	for(auto vit = vertices.begin(); vit != vertices.end(); ++vit)
 	{
 		parent[*vit] = *vit;
 		pair<string,int> somepair = make_pair(*vit , INF);
-		boost::heap::d_ary_heap< pair<string,int>, boost::heap::arity<2>,  boost::heap::compare< comparator >, boost::heap::mutable_<true> >::handle_type pos = pq.emplace(somepair);
+		bin_handle pos = pq.emplace(somepair);
 		pointer[*vit] = pos;
 	}
 
@@ -67,7 +55,7 @@ void prim()
 		visited.insert(it.first);	// Adding the vertex to the set of explored vertices. 
 
 		auto edgeit = adj_lis[it.first];
-		boost::heap::d_ary_heap< pair<string,int>, boost::heap::arity<2>,  boost::heap::compare< comparator >, boost::heap::mutable_<true> >::handle_type loophandler;
+		bin_handle loophandler;
 
 		for(auto vecit = edgeit.begin(); vecit != edgeit.end(); vecit++)
 		{
@@ -92,8 +80,9 @@ void prim()
 
 int main(int argc, char** argv)
 {
-	// string filename = argv[1];
 	string filename("graphFile.txt");
+	// string filename = argv[1];
+	time_t start_time,end_time;
 	ifstream f;
 	f.open(filename);
 	string name;
@@ -119,11 +108,15 @@ int main(int argc, char** argv)
 		adj_lis[v1][v2] = weight;
 		adj_lis[v2][v1] = weight;
 	}
+	f.close();
 // Edges read, adjacency list created.
 //	Calculating the MST of the garph by running prim's algorithm on it.
+	start_time = time(NULL);
 	prim();
+	end_time = time(NULL);
 // Done.
 	cout<<"The weight of the MST is "<<mst_weight<<endl;
+	cout<<"Time taken is "<<difftime(end_time,start_time)<<endl;
 
 // If the Edges of the MST have to be printed, Uncomment the following part
 /*
