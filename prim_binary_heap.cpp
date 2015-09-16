@@ -115,9 +115,9 @@ int main(int argc, char** argv)
 	prim();
 	end_time = time(NULL);
 // Done.
-	cout<<"The weight of the MST is "<<mst_weight<<endl;
-	cout<<"Time taken is "<<difftime(end_time,start_time)<<endl;
-
+	// cout<<"The weight of the MST is "<<mst_weight<<endl;
+	// cout<<"Time taken is "<<difftime(end_time,start_time)<<endl;
+	cout<<difftime(end_time,start_time);
 // If the Edges of the MST have to be printed, Uncomment the following part
 /*
 	cout<<"The Edges of the MST are:"<<endl;

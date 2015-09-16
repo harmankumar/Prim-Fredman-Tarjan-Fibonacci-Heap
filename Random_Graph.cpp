@@ -6,8 +6,8 @@ int main(int argc, char** argv){
  
 	vector< vector<int> > adj_lis;
 
-	int num_vert = stoi(argv[1]);
-	int num_edges = stoi(argv[2]);
+	long long num_vert = stoll(argv[1]);
+	long long num_edges = stoll(argv[2]);
 /*
 	int num_vert = 10;
 	int num_edges = 20;
@@ -50,7 +50,7 @@ int main(int argc, char** argv){
     	}
     	counter++;
     }
-
+/*
     cout<<num_vert<<" "<<pres_edges<<endl;
 
     for(int i = 0; i<num_vert; i++){
@@ -59,7 +59,7 @@ int main(int argc, char** argv){
     		cout<<adj_lis[i][j]<<" ";
     	cout<<endl;
     }
-
+*/
     string count;
     ifstream read;
     read.open("counter.txt");
@@ -78,6 +78,8 @@ int main(int argc, char** argv){
     f.open(s);
 
     bool first = true;
+
+    cout<<"Writing"<<endl;
 
     // Writing the names of the vertices in the file.
     for(int i = 0; i < num_vert; ++i)

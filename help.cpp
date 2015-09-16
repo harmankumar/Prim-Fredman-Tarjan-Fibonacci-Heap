@@ -1,4 +1,17 @@
-#include "FibonacciHeap.h"
+#include <bits/stdc++.h>
+#include <boost/heap/fibonacci_heap.hpp>
+
+using namespace std;
+
+#define INF numeric_limits<int>::max()
+
+struct comparator
+{
+	bool operator() (const pair<string,int>& a, const pair<string,int>& b) const
+	{
+		return a.second > b.second;
+	}
+};
 
 //class implementing Union Find Data Structure with Path Compression
 class UF    
@@ -76,7 +89,6 @@ public:
         return cnt;
     }
 };
-
 int counter = 0;
 int num_edges = 0;
 int num_vertices = 0;
@@ -88,6 +100,7 @@ long long mst_weight = 0;	// This is the weight of the MST.
 
 void fredman_tarjan(UF disjoint_set)
 {
+	// cout<<num_edges<<" "<<num_vertices<<endl;
 	if(heapSize == 0)	// First iteration
 	{	
 		heapSize = num_edges/num_vertices;	
@@ -96,18 +109,32 @@ void fredman_tarjan(UF disjoint_set)
 	{
 		heapSize = pow(2,heapSize);
 	}
+
+	cout<<disjoint_set.cnt<<endl;
 	
 	set<string> visited;	// Set of explored vertices.
+
+	cout<<"The vertices are "<<endl;
+
+	for(auto it = vertices.begin(); it != vertices.end(); it++)
+		cout<<*it<<endl;
+	cout<<"The Edges are "<<endl;
+
+	for(auto it = adj_lis.begin(); it != adj_lis.end(); it++)
+		for (auto vecit = ((*it).second).begin(); vecit != ((*it).second).end(); vecit++)
+			cout<<(*it).first<<" "<<(*vecit).first<<" "<<(*vecit).second<<endl;
 
 	for(auto iter = vertices.begin(); iter != vertices.end(); iter++)
 	{	
 		if(visited.find(disjoint_set.find(*iter)) == visited.end())	// The vertex has not yet been explored
 		{
-			fib pq; 
+			cout<<"Running the iteration for "<<*iter<<endl;
+			// visited.insert(*iter);
+			boost::heap::fibonacci_heap< pair<string,int>,  boost::heap::compare< comparator >, boost::heap::mutable_<true> > pq; 
 			auto edgeit1 = adj_lis[*iter];
-			unordered_map< string , fib_handle > pointer;	// This contains pointer to a vertex to it's location in the binary heap.
+			unordered_map< string , boost::heap::fibonacci_heap< pair<string,int>, boost::heap::compare< comparator >, boost::heap::mutable_<true> >::handle_type > pointer;	// This contains pointer to a vertex to it's location in the binary heap.
 			pair<string,int> somepair; 
-			fib_handle pos;
+			boost::heap::fibonacci_heap< pair<string,int>, boost::heap::compare< comparator >, boost::heap::mutable_<true> >::handle_type pos;
 			for(auto vecit1 = edgeit1.begin(); vecit1 != edgeit1.end(); vecit1++)
 			{
 				somepair = make_pair((*vecit1).first, (*vecit1).second);
@@ -117,26 +144,43 @@ void fredman_tarjan(UF disjoint_set)
 
 			while(!pq.empty())
 			{
+				cout<<*iter<<"   Size is "<<pq.size()<<endl;
 				auto it = (pq.top());
 				if((pq.size() > heapSize) || (visited.find(it.first) != visited.end()) || (disjoint_set.connected(it.first, *iter) ) )	// Size of the heap is too large or the node popped is a part of some other MST.
 				{
+					cout<<"Breaking"<<endl;
 					break;
 				}
+				cout<<"Merging "<<disjoint_set.mapping[it.first]<<" "<<disjoint_set.mapping[*iter]<<endl;
 				
 				visited.insert(*iter);
 				visited.insert(it.first);
 
+			    for(auto itx = disjoint_set.sz.begin(); itx != disjoint_set.sz.end(); itx++)
+			        cout<<itx->first<<" "<<itx->second<<endl;
+			    cout<<endl;
+
+
 				pq.pop();
+				cout<<"Popping "<<endl;
 				mst_weight += it.second;	// Adding the cost of the edge to the weight of the MST
+				cout<<"############### adding "<<it.second<<endl;
 				visited.insert(it.first);	// Adding the vertex to the set of explored vertices. 
 					
 
 				disjoint_set.merge(it.first,*iter);
 			    
 			    counter++;
+			    
+			    for(auto itx = disjoint_set.mapping.begin(); itx != disjoint_set.mapping.end(); itx++)
+			        cout<<itx->first<<" in the set "<<itx->second<<endl;
+			    cout<<endl;
+				cout<<disjoint_set.sz[it.first]<<" "<<disjoint_set.sz[*iter]<<endl;
+
+				// cout<<"Adding "<<it.second<<" "<<disjoint_set.cnt<<endl;
 
 				auto edgeit = adj_lis[it.first];
-				fib_handle loophandler;
+				boost::heap::fibonacci_heap< pair<string,int>, boost::heap::compare< comparator >, boost::heap::mutable_<true> >::handle_type loophandler;
 
 				for(auto vecit = edgeit.begin(); vecit != edgeit.end(); vecit++)
 				{
@@ -155,6 +199,9 @@ void fredman_tarjan(UF disjoint_set)
 							loophandler = pointer[(*vecit).first];
 							if( (*loophandler).second > (*vecit).second )
 							{
+								// cout<<"Changing Priority "<<(*vecit).first<<" "<<(*vecit).second<<endl;
+								// The priority has to be modified.
+								// parent[(*vecit).first] = it.first;
 								somepair = make_pair( (*vecit).first, (*vecit).second);
 								pq.update(loophandler, somepair);
 								pq.update(loophandler);
@@ -162,6 +209,9 @@ void fredman_tarjan(UF disjoint_set)
 						}
 					}
 				}
+
+				for(auto someit = pq.begin(); someit != pq.end(); someit++)
+        			cout << (*someit).first << " "<< (*someit).second<<endl; 
 			}
 		}
 	}
@@ -170,7 +220,7 @@ void fredman_tarjan(UF disjoint_set)
 	if(disjoint_set.cnt == 1)	// The MST has been computed.
 		return;
 
-	//If the MST has not yet been computed, perform a contraction and run it again.
+//If the MST has not yet been computed, perform a contraction and run it again.
 	unordered_map<string, unordered_map<string,int> > new_adj_lis;
 	set<string> newvertices;
 
@@ -195,6 +245,12 @@ The contraction is performed as follows:
 		new_adj_lis[*it] = mymap;
 
 
+	cout<<"Verices are "<<endl;
+	for(auto it = newvertices.begin(); it != newvertices.end(); it++)
+		cout<<*it<<endl;
+	cout<<endl;
+
+
 	for(auto it = adj_lis.begin(); it != adj_lis.end(); it++)
 	{
 		for (auto vecit = ((*it).second).begin(); vecit != ((*it).second).end(); vecit++)
@@ -210,6 +266,13 @@ The contraction is performed as follows:
 		}
 	}
 
+	cout<<"The New Edges are "<<endl;
+
+	for(auto it = new_adj_lis.begin(); it != new_adj_lis.end(); it++)
+		for (auto vecit = ((*it).second).begin(); vecit != ((*it).second).end(); vecit++)
+			cout<<(*it).first<<" "<<(*vecit).first<<" "<<(*vecit).second<<endl;
+
+
 	adj_lis = new_adj_lis;
 
 	fredman_tarjan(disjoint_set);
@@ -217,7 +280,7 @@ The contraction is performed as follows:
 
 int main()
 {
-	time_t start_time,end_time;
+
 	ifstream f;
 	f.open("graphFile.txt");
 	string name;
@@ -245,20 +308,15 @@ int main()
 		adj_lis[v1][v2] = weight;
 		adj_lis[v2][v1] = weight;
 	}
-	f.close();
 // Edges read, adjacency list created.
 //	Calculating the MST of the garph by running prim's algorithm on it.
 	
 	UF disjoint_set(vertices);	// Creating a disjoint set on the vector of vertices.
-	start_time = time(NULL);
 	fredman_tarjan(disjoint_set);
-	end_time = time(NULL);
 	// cout<<"Good Luck "<<num_edges<<endl;
 
 // Done.
-	// cout<<"The weight of the MST is "<<mst_weight<<endl;
-	// cout<<"Time taken is "<<difftime(end_time,start_time)<<endl;
-	cout<<difftime(end_time,start_time);
+	cout<<"The weight of the MST is "<<mst_weight<<endl;
 /*
 	cout<<"The Edges of the MST are:"<<endl;
 	for(auto hashit = parent.begin(); hashit != parent.end(); ++hashit)
@@ -268,3 +326,24 @@ int main()
 */
 	return 0;
 }
+
+
+/*
+	string arr[5];
+	arr[0] = "a";	
+	arr[1] = "b";
+	arr[2] = "c";
+	arr[3] = "d";
+	arr[4] = "e";
+	UF dis_set(arr , 5);
+	cout<<dis_set.count()<<endl;
+	cout<<dis_set.connected("a" , "b")<<endl;
+	dis_set.merge("a" , "b");
+	cout<<dis_set.count()<<endl;
+	cout<<dis_set.connected("a" , "b")<<endl;
+	cout<<dis_set.find("a")<<endl;
+*/
+
+				// cout<<"In the loop "<<pq.size()<<endl;	
+				// for (auto shit = pq.ordered_begin(); shit != pq.ordered_end(); ++shit)
+				// cout << (*shit).first <<" "<< (*shit).second <<'\n';
