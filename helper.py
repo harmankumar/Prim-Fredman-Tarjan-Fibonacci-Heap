@@ -3,7 +3,10 @@ import subprocess
 import shutil
 import zipfile
 
-def split():
+def merge():
+	shutil.copyfile( "util.h", "util1.h")
+	with zipfile.ZipFile('src1.zip', "r") as z:
+		z.extractall()
 	f = open("util.h","w")
 	h = open("count.txt","r")
 
@@ -20,14 +23,11 @@ def split():
 			f.write(line)
 		g.close()
 		count += 1
-		print "In the loop"
+		# print "In the loop"
 
 	f.close()
 
-def merge():
-	shutil.copyfile( "util.h", "util1.h")
-	with zipfile.ZipFile('src1.zip', "r") as z:
-		z.extractall()
+def split():
 
 	f = open("util.h","r")
 	count = 1
@@ -45,6 +45,7 @@ def merge():
 	h.close()	
 	shutil.rmtree('src1')
 
-def finale():
+def process():
 	shutil.copyfile("util1.h", "util.h")
 	os.remove("util1.h")
+	shutil.rmtree('src1')
