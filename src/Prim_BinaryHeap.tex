@@ -1,0 +1,80 @@
+\documentclass[]{article}
+
+\usepackage[parfill]{parskip}
+
+\usepackage{hyperref}
+
+\usepackage{amssymb}
+
+\usepackage{listings}
+
+\usepackage{fixltx2e}
+
+\usepackage[T1]{fontenc}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{color}
+ 
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle}
+
+%\sectionfont{\fontsize{10}{10}\selectfont}
+
+
+\begin{document}
+
+
+\author{
+		Harman Kumar\\
+		2013CS10224		
+		}
+
+\title{prim\_binary\_heap.cpp Documentation}
+\maketitle
+
+
+\section{prim()}
+
+\begin{flushleft}
+	This function contains the implementation of the prims algorithm. It runs the algorithm on the input graph and stores the MST computed.
+	
+\end{flushleft} 
+
+
+
+\section{I/O specification}
+
+	The graph is read from \textbf{RandomGraph.txt}, stored in the form of an adjacency list and the MST is written in \textbf{prim\_time.txt} 
+
+\section{Requirements and Execution}
+
+The system must have c++11 and boost libraries on the system.
+
+To execute the code:\\ 
+g++ -o0 -I <path to boost libraries> prim\_binary\_heap.cpp -o prim
+
+\end{document}

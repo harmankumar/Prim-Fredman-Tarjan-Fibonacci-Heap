@@ -1,0 +1,109 @@
+\documentclass[]{article}
+
+\usepackage[parfill]{parskip}
+
+\usepackage{hyperref}
+
+\usepackage{amssymb}
+
+\usepackage{listings}
+
+\usepackage{fixltx2e}
+
+\usepackage[T1]{fontenc}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{color}
+ 
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle}
+
+%\sectionfont{\fontsize{10}{10}\selectfont}
+
+
+\begin{document}
+
+
+\author{
+		Harman Kumar\\
+		2013CS10224		
+		}
+
+\title{Fredman-Tarjan.cpp Documentation}
+\maketitle
+
+
+\section{The Union Find:}
+
+\begin{flushleft}
+
+The class UF is an implementation of the Union Find data structure. Union by rank and path compression heuristics were added to make the implementation efficient.
+	\lstinputlisting[language=c++]{UF.h}	
+	\vspace{10px}	
+
+\end{flushleft} 
+
+
+\section{FibonacciHeap.h}
+\begin{flushleft}
+	In order to implement the Fredman-Tarjan algorithm, the fibonacci heap data structure was implemented.\\
+	Following is the structure of a node of the fibonacci heap:
+	
+	\lstinputlisting[language=c++]{Fib_Node.h}	
+
+	Following is the structure of the fibonacci heap (only user accesible functions are mentioned here):	
+
+	\lstinputlisting[language=c++]{Fib.h}	
+	\vspace{10px}	
+	
+\end{flushleft} 
+
+\section{fredman\_tarjan(UF disjoint\_set)}
+\begin{flushleft}
+\begin{enumerate}
+
+	\item One iteration of the fredman-tarjan algorithm takes as input the set of "super-vertices" on which the MST has to be calculated.\\
+	
+	\item It performs an iteration of the algorithm on the vertices and stores the edges that have been added to the MST.
+	
+	\item Finally a contraction is performed on the set of edges and vertices. 
+
+\end{enumerate}	
+\end{flushleft}
+
+\section{I/O specification}
+
+	The graph is read from \textbf{RandomGraph.txt}, stored in the form of an adjacency list and the MST is written in \textbf{tarjan\_time.txt} 
+
+\section{Requirements and Execution}
+
+The system must have c++11 and boost libraries on the system.
+
+To execute the code:\\ 
+g++ -o0 -I <path to boost libraries> -std=c++11 fredman-tarjan\_fibonacci\_heap.cpp -o tarjan
+
+\end{document}

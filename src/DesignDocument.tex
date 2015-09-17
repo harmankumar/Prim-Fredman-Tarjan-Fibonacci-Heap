@@ -1,0 +1,196 @@
+\documentclass[]{article}
+
+\usepackage[parfill]{parskip}
+
+\usepackage{hyperref}
+
+\usepackage{amssymb}
+
+\usepackage{listings}
+
+\usepackage{fixltx2e}
+
+\usepackage[T1]{fontenc}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{color}
+ 
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle}
+
+%\sectionfont{\fontsize{10}{10}\selectfont}
+
+
+\begin{document}
+
+
+\author{
+		Harman Kumar\\
+		2013CS10224		
+		}
+
+\title{Design Document}
+\maketitle
+
+
+
+% \begin{center}
+
+% Problem Statement : \href { http://www.cse.iitd.ac.in/~prathmesh/ta/COP290/ass1.html }{Assignment Link}
+
+% \end{center}
+
+
+\section{Overall Design}
+
+\begin{flushleft}
+The whole project is divided into the following parts:
+
+\begin{enumerate}
+
+\item Implementing the data structures required by the algorithms, namely binary heap, union find and fibonacci heap.
+
+\item Using the above mentioned data structures, implementing the prims MST algorithm and the fredman-tarjan MST algorithm.
+
+\item Generating random graphs on which the the running times of the above mentioned MST algorithms would be tested. 
+
+\item A script for the automated testing of the algorithms on the generated graphs and timing them.  
+
+\end{enumerate} 
+
+\end{flushleft} 
+
+
+
+\section{Random Graph Generation}
+\begin{flushleft}
+	The random graph generator was implemented in C++.
+	
+	Some features of the random graph generator are as follows:
+	
+\begin{enumerate}
+	\item The generated graph is guaranteed to be connected. This is done by generating a tree and adding edges to it, until a graph of the desired properties is not formed.
+
+	\item The number of vertices and desired number of edges were taken as user parameters and the graph is generated accordingly.
+	
+	\item The approach of adding vertices to the tree is as follows:\\
+	\vspace{10px}
+Pick two random vertices:	
+	\begin{enumerate}
+	\item If they are connected, do nothing.
+	\item If not, add an edge with a randomly generated weight between them.
+	\end{enumerate}
+Do the above till either the desired number of edges is reached \textbf{OR} there is a timeout condition.	\\
+	After the graph has been generated, print it out in a file.
+\end{enumerate}
+
+\end{flushleft}
+
+\section{Prims Algorithm and The Binary Heap}
+\begin{flushleft}
+\begin{itemize}
+
+
+	\item The implementation of the binary heap provided by the boost heap library is used.
+	\item The graph is read from a text file and stored in the form of an adjacency list. 
+	\item Prims algorithm is run on the graph and the MST is computed.
+	\item The output of the program is the time taken to compute the MST of the input graph.
+\end{itemize}	
+		\vspace{10px}
+	The input graph is read from the file \textbf{RandomGraph.txt}.
+	
+	The MST, it's weight and the time taken are written in the file \textbf{prim\_timing.txt}
+	
+	For testing purposes, only the time was written, the MST and its weight could be given as output by uncommenting that part of code.  
+	
+  
+\end{flushleft} 
+
+\section{Fredman-Tarjan Algorithm and The Fibonacci Heap}
+\begin{flushleft}
+	In order to implement the Fredman-Tarjan algorithm, the fibonacci heap data structure was implemented.\\
+	Features of the Fibonacci Heap:
+	\begin{itemize}
+	\item The fibonacci heap implemented takes in a string and integer as key-value pair.
+	\item The heap provides only the decrease key operation for modifying nodes, increase key is not implemented, since the algorithm requires only the former. 
+	\end{itemize}
+	Following is the structure of a node of the fibonacci heap:
+	
+	\lstinputlisting[language=c++]{Fib_Node.h}	
+	\vspace{10px}	
+	Following is the structure of the fibonacci heap (only user accesible functions are mentioned here):	
+
+	\lstinputlisting[language=c++]{Fib.h}	
+	\vspace{10px}	
+	In order to maintain disjoint sets of vertices, the Union-Find data structure is implemented. The \textbf{Union by rank} and \textbf{Path compression} heuristics were added in order to make the it efficient.
+	\lstinputlisting[language=c++]{UF.h}
+
+	The graph is read from a text file and stored in the form of an adjacency list. The Fredman-Tarjan algorithm is applied on the graph and the weight of the MST is given as output.\\
+	\vspace{10px}
+	The input graph is read from the file \textbf{RandomGraph.txt}.
+	
+	The MST, it's weight and the time taken are written in the file \textbf{tarjan\_timing.txt}
+	
+	For testing purposes, only the time was written, the MST and its weight could be given as output by uncommenting that part of code.  
+	
+\end{flushleft} 
+
+\section{Automated Testing}
+\begin{flushleft}
+	This is done by a python script (Automated\_Tester.py).
+	This script Generates a random graph, and runs the two algorithms on the graph. The time taken by the algorithms in written in a text file, which is later read and recorded.\\
+	\vspace{10px}
+	The timing of the algorithms was done inside the C++ code itself by using the c++11 <chrono> library. The recorded time was in milliseconds in order to get a accurate execution time. The time was that taken by the algorithm to compute the MST of the graph, exclusive of any time spent on file I/O etc.\\
+	\vspace{10px}
+	The following was done in order to get a better idea of the running times:
+	\begin{enumerate}
+	\item While compiling the programs, the \textbf{-o0} flag was used in order to turn off all compiler optimizations. 
+	\item Disk caching was disabled, so that every memory access takes the same amount of time. 
+	\item All the other processes running were turned off so that all the resources are available for testing.
+	\end{enumerate}
+	
+	The tests were carried out for the following categories of graphs:
+	\begin{enumerate}	
+	\item Very sparse (near tree) graphs.
+	 \item sparse graphs.
+	 \item dense graphs.
+	\end{enumerate}
+	
+	
+\end{flushleft}
+
+\section{Acknowledgements}
+\begin{flushleft}
+\begin{itemize}
+\item Boost C++ libraries, for the boost::heap library, and a few other libraries. (used in the implementation of prims algorithm).
+\item Introduction to Algorithms by CLRS, for the pseudocode for fibonacci heap, that was translated into C++ code. 
+\item g++ documentation and windows caching documentation for turning off all levels of compiler optimizations and disk caching.
+\end{itemize}
+\end{flushleft}
+
+
+\end{document}
