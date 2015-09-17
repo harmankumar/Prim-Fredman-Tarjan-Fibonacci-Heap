@@ -1,0 +1,5 @@
+This Project Compares the running times of Prims algorithm and Fredman-Tarjan algorithm for computing the MST of graphs.
+
+In order to implement the algorithms, Fibonacci Heap, Union Find and Binary Heap data structures were implemented. 
+
+In theoretical sense, Fibonacii heaps are more efficient as compared to binary heaps.
