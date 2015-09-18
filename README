@@ -3,5 +3,3 @@ Prims algorithm uses binary heap as it's base data structure whwreas the fredman
 In order to implement the algorithms, Fibonacci Heap, Union Find and Binary Heap data structures were implemented. 
 The running times of the algorithms were tested on randomly generated graphs, classified as very sparse, sparse and dense.
 The number of vertices in the graphs vaaaried between a few hundred and a few million.
-
-In theoretical sense, Fibonacci heaps are more efficient as compared to binary heaps.
